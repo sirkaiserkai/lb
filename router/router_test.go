@@ -3,7 +3,7 @@ package router
 import "testing"
 
 // Should probably split this out into two structs. One for configuration another for the tests.RouterTest
-// At this point, it's misleading because a 'request' may match to a previous RoutePattern.
+// At this point, the structure misleading because a 'request' may match to a previous RoutePattern.
 type RouterTest struct {
 	pattern RoutePattern
 	request string
