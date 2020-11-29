@@ -4,15 +4,20 @@ import (
 	"errors"
 )
 
-// Pattern is a Regex pattern.
-type Pattern struct {
-	RegexString string
+// Router maps a request to a given host, if the pattern exists.
+type Router struct {
+	routeMaps []*RouteMap
 }
 
 // RoutePattern maps a pattern to a Host endpoint. Not, the patterns are concatenated onto one another.
 type RoutePattern struct {
 	p    Pattern
 	Host string
+}
+
+// Pattern is a Regex pattern.
+type Pattern struct {
+	RegexString string
 }
 
 // New returns an ew Router instance for the given regex.
@@ -26,11 +31,6 @@ func New(routes []RoutePattern) (*Router, error) {
 		maps[i] = routeMap
 	}
 	return &Router{routeMaps: maps}, nil
-}
-
-// Router maps a request to a given host, if the pattern exists.
-type Router struct {
-	routeMaps []*RouteMap
 }
 
 // GetHost returns the host URL for the given request string.
