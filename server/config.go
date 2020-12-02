@@ -5,8 +5,12 @@ const (
 	RegexAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 )
 
-// Config is the configuration object for the server.
-type Config struct {
+// RouterConfig is the configuration object for the server.
+type RouterConfig struct {
 	Patterns []Pattern
 	Routes   []RoutePattern
+}
+
+// LoadBalancerConfig is the configuration object for a loadbalancer.
+type LoadBalancerConfig struct {
 }

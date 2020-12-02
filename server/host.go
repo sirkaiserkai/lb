@@ -43,3 +43,10 @@ func (h GenericHost) isHealthy() bool {
 func (h GenericHost) Endpoint() string {
 	return h.endpoint
 }
+
+// NewHostForAddRequest creates a host for a AddHostRequest
+func NewHostForAddHostRequest(request AddHostRequest) GenericHost {
+	return GenericHost{
+		endpoint: request.Endpoint,
+	}
+}

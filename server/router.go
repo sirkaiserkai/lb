@@ -20,8 +20,8 @@ type Pattern struct {
 	RegexString string
 }
 
-// New returns an ew Router instance for the given regex.
-func New(routes []RoutePattern) (*Router, error) {
+// NewRouter returns an ew Router instance for the given regex.
+func NewRouter(routes []RoutePattern) (*Router, error) {
 	maps := make([]*RouteMap, len(routes))
 	for i, rp := range routes {
 		routeMap, err := NewMap(rp)

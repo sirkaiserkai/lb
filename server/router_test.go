@@ -41,7 +41,7 @@ func TestMatch(t *testing.T) {
 		routes[i] = test.pattern
 	}
 
-	r, err := New(routes)
+	r, err := NewRouter(routes)
 	if err != nil {
 		t.Errorf("Unexpected error: '%s'", err)
 		return
@@ -61,7 +61,7 @@ func TestGetHost(t *testing.T) {
 		routes[i] = test.pattern
 	}
 
-	r, err := New(routes)
+	r, err := NewRouter(routes)
 	if err != nil {
 		t.Errorf("Unexpected error: '%s'", err)
 		return
