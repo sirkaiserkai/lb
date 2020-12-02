@@ -9,6 +9,7 @@ type HealthCheck struct {
 
 // Run iterates over the available hosts and performs a health check.
 func (hc HealthCheck) Run() error {
+	fmt.Println("running health check")
 	for _, h := range hc.manager.GetHosts() {
 		r, err := h.Health()
 		if err != nil {

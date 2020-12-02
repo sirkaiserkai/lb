@@ -20,7 +20,7 @@ type Runner struct {
 
 func (runner Runner) executeRunnables() error {
 	for {
-		log.Println("Running background runnables.")
+		// log.Println("Running background runnables.")
 		for _, r := range runner.runnables {
 			if err := r.Run(); err != nil {
 				return err
