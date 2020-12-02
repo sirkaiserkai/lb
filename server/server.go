@@ -17,8 +17,9 @@ func New(c Config) LoadBalancer {
 
 // LoadBalancer is a simple LB server.
 type LoadBalancer struct {
-	C    Config
-	Port string
+	C     Config
+	Port  string
+	hosts []Host
 }
 
 // Add supports adding a new endpoint to send traffic to.

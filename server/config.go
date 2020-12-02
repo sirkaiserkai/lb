@@ -1,7 +1,5 @@
 package server
 
-import "github.com/sirkaiserkai/lb/router"
-
 const (
 	// RegexAlphabet is the available alphabet for regular expression patterns.
 	RegexAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -9,6 +7,6 @@ const (
 
 // Config is the configuration object for the server.
 type Config struct {
-	Patterns []router.Pattern
-	Routes   []router.RoutePattern
+	Patterns []Pattern
+	Routes   []RoutePattern
 }
