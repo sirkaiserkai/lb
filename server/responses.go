@@ -9,3 +9,8 @@ type HealthStatusResponse struct {
 type AddHostResponse struct {
 	Status string `json:"status"`
 }
+
+// RemoveHostResponse is the response upon successfully removing an existing host.
+type RemoveHostResponse struct {
+	Status string `json:"status"`
+}

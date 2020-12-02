@@ -2,10 +2,18 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+)
+
+var (
+	// ErrHostDoesNotExist error returned when host does not exist.
+	ErrHostDoesNotExist = errors.New("host does not exist")
+	// ErrHostAlreadyExists error returned when host already exists.
+	ErrHostAlreadyExists = errors.New("host already exists")
 )
 
 // NewLoadBalancer returns a new LoadBalancer instance.
@@ -23,25 +31,55 @@ type LoadBalancer struct {
 	hosts []Host
 }
 
+// AddHost adds a new host instance to the LoadBalancer.
+func (lb *LoadBalancer) AddHost(h Host) error {
+	// TODO: return error if host already exists.
+	lb.hosts = append(lb.hosts, h)
+	return nil
+}
+
+// RemoveHost removes a host if it exists.
+func (lb *LoadBalancer) RemoveHost(endpoint string) error {
+	// i := 0
+	// for i < len(lb.hosts) {
+	// 	h :=
+	// 	if lb.hosts[i].Endpoint() == endpoint {
+
+	// 	}
+	// 	i++
+	// }
+	return errors.New("Unimplemented")
+}
+
 // Add supports adding a new endpoint to send traffic to.
 func (lb *LoadBalancer) Add(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		SetError(w, err)
 	}
+	defer r.Body.Close()
 	addHostRequest := AddHostRequest{}
 	if err := json.Unmarshal(body, &addHostRequest); err != nil {
 		SetError(w, err)
 	}
 	h := NewHostForAddHostRequest(addHostRequest)
-	lb.hosts = append(lb.hosts, h)
+	if err := lb.AddHost(h); err != nil {
+		SetError(w, err)
+	}
 	SetJSONResponse(w, AddHostResponse{Status: "created"})
 }
 
 // Remove deletes an endpoint to send traffic to.
 func (lb *LoadBalancer) Remove(w http.ResponseWriter, r *http.Request) {
-
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		SetError(w, err)
+	}
+	defer r.Body.Close()
+	rm := RemoveHostRequest{}
+	if err := json.Unmarshal(body, &rm); err != nil {
+		SetError(w, err)
+	}
 }
 
 // Route is the default router.
