@@ -5,12 +5,7 @@ type HealthStatusResponse struct {
 	Health string `json:"health"`
 }
 
-//AddHostResponse the response for adding an ew host.
-type AddHostResponse struct {
-	Status string `json:"status"`
-}
-
-// RemoveHostResponse is the response upon successfully removing an existing host.
-type RemoveHostResponse struct {
+// ModifyHostReponse is the response upon successfully removing an existing host.
+type ModifyHostReponse struct {
 	Status string `json:"status"`
 }

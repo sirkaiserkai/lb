@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/sirkaiserkai/lb/server/background"
 )
 
 var (
@@ -18,46 +20,20 @@ var (
 
 // NewLoadBalancer returns a new LoadBalancer instance.
 func NewLoadBalancer(c LoadBalancerConfig) LoadBalancer {
+	hostManager := HostManager{}
 	return LoadBalancer{
-		C:    c,
-		Port: "8081",
+		C:           c,
+		Port:        "8081",
+		hostManager: &hostManager,
 	}
 }
 
 // LoadBalancer is a simple LB server.
 type LoadBalancer struct {
-	C     LoadBalancerConfig
-	Port  string
-	hosts []Host
-}
-
-// AddHost adds a new host instance to the LoadBalancer.
-func (lb *LoadBalancer) AddHost(h Host) error {
-	// TODO: Improve runtime using better data structure. Since we're using endpoint as unique identifier, we should use a map.
-	for _, existingHost := range lb.hosts {
-		if existingHost.EqualsHost(h) {
-			return ErrHostAlreadyExists
-		}
-	}
-	lb.hosts = append(lb.hosts, h)
-	return nil
-}
-
-// RemoveHost removes a host if it exists.
-func (lb *LoadBalancer) RemoveHost(h Host) error {
-	indexToRemove := -1
-	for i, existingHost := range lb.hosts {
-		if existingHost.EqualsHost(h) {
-			indexToRemove = i
-			break
-		}
-	}
-	if indexToRemove < 0 {
-		return ErrHostNotFound
-	}
-
-	lb.hosts = append(lb.hosts[:indexToRemove], lb.hosts[indexToRemove+1:]...)
-	return nil
+	C                LoadBalancerConfig
+	Port             string
+	hostManager      *HostManager
+	backgroundRunner background.Runner
 }
 
 // Add supports adding a new endpoint to send traffic to.
@@ -72,10 +48,10 @@ func (lb *LoadBalancer) Add(w http.ResponseWriter, r *http.Request) {
 		SetError(w, err)
 	}
 	h := NewHostForAddHostRequest(addHostRequest)
-	if err := lb.AddHost(h); err != nil {
+	if err := lb.hostManager.AddHost(h); err != nil {
 		SetError(w, err)
 	}
-	SetJSONResponse(w, AddHostResponse{Status: "created"})
+	SetJSONResponse(w, ModifyHostReponse{Status: "created"})
 }
 
 // Remove deletes an endpoint to send traffic to.
@@ -89,6 +65,11 @@ func (lb *LoadBalancer) Remove(w http.ResponseWriter, r *http.Request) {
 	if err := json.Unmarshal(body, &rm); err != nil {
 		SetError(w, err)
 	}
+	h := NewHost(rm.Endpoint)
+	if err := lb.hostManager.RemoveHost(h); err != nil {
+		SetError(w, err)
+	}
+	SetJSONResponse(w, ModifyHostReponse{Status: "removed"})
 }
 
 // Route is the default router.
@@ -110,6 +91,9 @@ func (lb LoadBalancer) Health(w http.ResponseWriter, r *http.Request) {
 
 // Run runs the server instance.
 func (lb LoadBalancer) Run() {
+	// Runs background processes.
+	go lb.backgroundRunner.Run()
+
 	http.HandleFunc("/add", lb.Add)
 	http.HandleFunc("/remove", lb.Remove)
 	http.HandleFunc("/health", lb.Health)
