@@ -10,6 +10,7 @@ import (
 type Host interface {
 	Endpoint() string
 	Health() (*HealthStatusResponse, error)
+	EqualsHost(other Host) bool
 }
 
 // GenericHost is the default struct that encapsulates a host.
@@ -42,6 +43,11 @@ func (h GenericHost) isHealthy() bool {
 // Endpoint returns the endpoint string.
 func (h GenericHost) Endpoint() string {
 	return h.endpoint
+}
+
+// EqualsHost validates whether two hosts are equal.
+func (h GenericHost) EqualsHost(other Host) bool {
+	return h.Endpoint() == other.Endpoint()
 }
 
 // NewHost returns a host for the given endpoint

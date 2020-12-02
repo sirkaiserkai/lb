@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"math/rand"
 	"testing"
 )
@@ -16,21 +15,42 @@ func TestAddHost(t *testing.T) {
 	}
 }
 
+// RemoveHostTest is used to set up
+type HostTest struct {
+	host Host
+	err  error
+}
+
 func TestRemoveHost(t *testing.T) {
 	// Set up test using sample endpoints.
-	r := rand.New(rand.NewSource(99))
-	size := 100
-	randHosts := make([]Host, size)
-	for i := 0; i < size; i++ {
-		endpoint := fmt.Sprintf("%d", r.Intn(size))
-		randHosts[i] = NewHost(endpoint)
+	endpoints := []string{"example.com", "bomb.com", "xyz.com"}
+	randHosts := make([]Host, len(endpoints))
+	for i := 0; i < len(endpoints); i++ {
+		randHosts[i] = NewHost(endpoints[i])
 	}
 	lb := NewLoadBalancer(LoadBalancerConfig{})
 	lb.hosts = randHosts
-
-	// Perform test.
 	randomSample := randHosts[rand.Intn(len(randHosts))]
-	if err := lb.RemoveHost(randomSample.Endpoint()); err != nil {
-		t.Error("Unexpected error: ", err.Error())
+	tests := []HostTest{
+		{
+			host: randomSample,
+			err:  nil,
+		},
+		{
+			host: NewHost("notfound.com"),
+			err:  ErrHostNotFound,
+		},
+	}
+
+	for _, test := range tests {
+		if err := lb.RemoveHost(test.host); err != nil {
+			if test.err == nil {
+				t.Errorf("Unexpected error. Received error: '%s'", err)
+			} else if err != test.err {
+				t.Errorf("Unexpected error. Expected error: '%s', received error: '%s'", test.err, err)
+			}
+		} else {
+			// Verify host is gone
+		}
 	}
 }

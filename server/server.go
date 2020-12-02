@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	// ErrHostDoesNotExist error returned when host does not exist.
-	ErrHostDoesNotExist = errors.New("host does not exist")
+	// ErrHostNotFound error returned when host does not exist.
+	ErrHostNotFound = errors.New("host not found")
 	// ErrHostAlreadyExists error returned when host already exists.
 	ErrHostAlreadyExists = errors.New("host already exists")
 )
@@ -33,22 +33,31 @@ type LoadBalancer struct {
 
 // AddHost adds a new host instance to the LoadBalancer.
 func (lb *LoadBalancer) AddHost(h Host) error {
-	// TODO: return error if host already exists.
+	// TODO: Improve runtime using better data structure. Since we're using endpoint as unique identifier, we should use a map.
+	for _, existingHost := range lb.hosts {
+		if existingHost.EqualsHost(h) {
+			return ErrHostAlreadyExists
+		}
+	}
 	lb.hosts = append(lb.hosts, h)
 	return nil
 }
 
 // RemoveHost removes a host if it exists.
-func (lb *LoadBalancer) RemoveHost(endpoint string) error {
-	// i := 0
-	// for i < len(lb.hosts) {
-	// 	h :=
-	// 	if lb.hosts[i].Endpoint() == endpoint {
+func (lb *LoadBalancer) RemoveHost(h Host) error {
+	indexToRemove := -1
+	for i, existingHost := range lb.hosts {
+		if existingHost.EqualsHost(h) {
+			indexToRemove = i
+			break
+		}
+	}
+	if indexToRemove < 0 {
+		return ErrHostNotFound
+	}
 
-	// 	}
-	// 	i++
-	// }
-	return errors.New("Unimplemented")
+	lb.hosts = append(lb.hosts[:indexToRemove], lb.hosts[indexToRemove+1:]...)
+	return nil
 }
 
 // Add supports adding a new endpoint to send traffic to.
