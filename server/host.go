@@ -44,6 +44,11 @@ func (h GenericHost) Endpoint() string {
 	return h.endpoint
 }
 
+// NewHost returns a host for the given endpoint
+func NewHost(endpoint string) Host {
+	return GenericHost{endpoint: endpoint}
+}
+
 // NewHostForAddHostRequest creates a host for a AddHostRequest
 func NewHostForAddHostRequest(request AddHostRequest) GenericHost {
 	return GenericHost{
