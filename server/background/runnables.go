@@ -15,17 +15,18 @@ type Runner struct {
 	// runnables are the runnable background processes.
 	runnables []Runnable
 	// Cooldown is the duration between each time the routine runner executes its routines.
-	cooldown time.Duration
+	Cooldown time.Duration
 }
 
 func (runner Runner) executeRunnables() error {
 	for {
+		log.Println("Running background runnables.")
 		for _, r := range runner.runnables {
 			if err := r.Run(); err != nil {
 				return err
 			}
 		}
-		time.Sleep(runner.cooldown)
+		time.Sleep(runner.Cooldown)
 	}
 }
 

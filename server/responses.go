@@ -1,5 +1,9 @@
 package server
 
+const (
+	HealthStatusOK = "OK"
+)
+
 // HealthStatusResponse the response for a health request.
 type HealthStatusResponse struct {
 	Health string `json:"health"`

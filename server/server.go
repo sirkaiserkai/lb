@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/sirkaiserkai/lb/server/background"
 )
@@ -25,6 +26,9 @@ func NewLoadBalancer(c LoadBalancerConfig) LoadBalancer {
 		C:           c,
 		Port:        "8081",
 		hostManager: &hostManager,
+		backgroundRunner: background.Runner{
+			Cooldown: time.Second * 10,
+		},
 	}
 }
 
@@ -52,6 +56,7 @@ func (lb *LoadBalancer) Add(w http.ResponseWriter, r *http.Request) {
 		SetError(w, err)
 	}
 	SetJSONResponse(w, ModifyHostReponse{Status: "created"})
+	lb.hostManager.PrintHosts()
 }
 
 // Remove deletes an endpoint to send traffic to.
@@ -70,6 +75,7 @@ func (lb *LoadBalancer) Remove(w http.ResponseWriter, r *http.Request) {
 		SetError(w, err)
 	}
 	SetJSONResponse(w, ModifyHostReponse{Status: "removed"})
+	lb.hostManager.PrintHosts()
 }
 
 // Route is the default router.
@@ -93,6 +99,7 @@ func (lb LoadBalancer) Health(w http.ResponseWriter, r *http.Request) {
 func (lb LoadBalancer) Run() {
 	// Runs background processes.
 	go lb.backgroundRunner.Run()
+	fmt.Println("Running on port ", lb.Port)
 
 	http.HandleFunc("/add", lb.Add)
 	http.HandleFunc("/remove", lb.Remove)

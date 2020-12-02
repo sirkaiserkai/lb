@@ -1,18 +1,7 @@
 package lb
 
-func NewLoadBalancer() {
-	// getPattern := router.Pattern{
-	// 	Regex: "/get/",
-	// }
-	// putPattern := router.Pattern{
-	// 	Regex: "/put/",
-	// }
+import "github.com/sirkaiserkai/lb/server"
 
-	// _ := server.Config{
-	// 	Patterns: []router.Pattern{
-	// 		getPattern,
-	// 		putPattern,
-	// 	},
-	// }
-
+func NewLoadBalancer() server.LoadBalancer {
+	return server.NewLoadBalancer(server.LoadBalancerConfig{})
 }
