@@ -37,14 +37,11 @@ func (ds DummyServer) addToLoadBalancer() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("before read")
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	fmt.Println("before unmarshal")
 	modifyResponse := ModifyHostReponse{}
-	fmt.Println(string(body))
 	if err := json.Unmarshal(body, &modifyResponse); err != nil {
 		return err
 	}
