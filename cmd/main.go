@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/sirkaiserkai/lb"
@@ -35,7 +34,6 @@ func main() {
 	// fmt.Println(a[len(a)/2-1 : len(a)/2])
 
 	args := flags()
-	fmt.Println(args.lb)
 	switch args.serviceType {
 	case "lb":
 		lb := lb.NewLoadBalancer(args.port)
