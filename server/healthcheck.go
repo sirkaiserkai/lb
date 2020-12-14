@@ -12,6 +12,7 @@ type HealthCheck struct {
 
 // Run iterates over the available hosts and performs a health check.
 func (hc HealthCheck) Run() error {
+	// TODO: Update Run to return a slice of errors. This will allow the HealthCheck instance to validate all the hosts before exiting.
 	log.Println("Running health checks")
 	for _, h := range hc.manager.GetHosts() {
 		r, err := h.Health()
