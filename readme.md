@@ -2,7 +2,7 @@
 
 Range based load balancer.
 
-# Usage 
+# Usage
 
 ```bash
 # starts the lb
