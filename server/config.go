@@ -13,4 +13,5 @@ type RouterConfig struct {
 
 // LoadBalancerConfig is the configuration object for a loadbalancer.
 type LoadBalancerConfig struct {
+	Port string
 }

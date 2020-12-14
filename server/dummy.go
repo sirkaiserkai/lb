@@ -17,12 +17,11 @@ type DummyServer struct {
 }
 
 // NewDummy returns a new dummy, dummy.
-func NewDummy() DummyServer {
-	port := "8082"
+func NewDummy(port string, loadBalancerEndpoint string) DummyServer {
 	return DummyServer{
-		LoadBalancerEndpoint: "http://localhost:8081",
+		LoadBalancerEndpoint: loadBalancerEndpoint,
 		Port:                 port,
-		DummyHost:            NewHost("localhost:" + port),
+		DummyHost:            NewHost("http://localhost:" + port),
 	}
 }
 
@@ -38,11 +37,14 @@ func (ds DummyServer) addToLoadBalancer() error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("before read")
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
+	fmt.Println("before unmarshal")
 	modifyResponse := ModifyHostReponse{}
+	fmt.Println(string(body))
 	if err := json.Unmarshal(body, &modifyResponse); err != nil {
 		return err
 	}
@@ -64,7 +66,6 @@ func (ds DummyServer) Health(w http.ResponseWriter, r *http.Request) {
 // Run executes the dummy api.
 func (ds DummyServer) Run() {
 	fmt.Println("Running on port ", ds.Port)
-	// TODO: Reach out to LB to add itself
 	if err := ds.addToLoadBalancer(); err != nil {
 		panic(err)
 	}

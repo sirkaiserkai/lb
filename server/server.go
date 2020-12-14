@@ -29,7 +29,7 @@ func NewLoadBalancer(c LoadBalancerConfig) LoadBalancer {
 
 	return LoadBalancer{
 		C:           c,
-		Port:        "8081",
+		Port:        c.Port,
 		hostManager: &hostManager,
 		backgroundRunner: background.Runner{
 			Cooldown:  time.Second * 10,
@@ -51,15 +51,19 @@ func (lb *LoadBalancer) Add(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		SetError(w, err)
+		return
 	}
 	defer r.Body.Close()
 	addHostRequest := AddHostRequest{}
 	if err := json.Unmarshal(body, &addHostRequest); err != nil {
 		SetError(w, err)
+		return
 	}
 	h := NewHostForAddHostRequest(addHostRequest)
+	// TODO: Handle case where host exists, however, host is unhealthy.
 	if err := lb.hostManager.AddHost(h); err != nil {
 		SetError(w, err)
+		return
 	}
 	SetJSONResponse(w, ModifyHostReponse{Status: "created"})
 	lb.hostManager.PrintHosts()
@@ -75,10 +79,12 @@ func (lb *LoadBalancer) Remove(w http.ResponseWriter, r *http.Request) {
 	rm := RemoveHostRequest{}
 	if err := json.Unmarshal(body, &rm); err != nil {
 		SetError(w, err)
+		return
 	}
 	h := NewHost(rm.Endpoint)
 	if err := lb.hostManager.RemoveHost(h); err != nil {
 		SetError(w, err)
+		return
 	}
 	SetJSONResponse(w, ModifyHostReponse{Status: "removed"})
 	lb.hostManager.PrintHosts()
@@ -97,6 +103,7 @@ func (lb LoadBalancer) Health(w http.ResponseWriter, r *http.Request) {
 	b, err := json.Marshal(health)
 	if err != nil {
 		SetError(w, err)
+		return
 	}
 	fmt.Fprint(w, string(b))
 }
