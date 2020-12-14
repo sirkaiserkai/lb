@@ -10,6 +10,7 @@ func TestAddHost(t *testing.T) {
 	h := GenericHost{
 		endpoint: "example.com",
 	}
+	// TODO: Test adding an existing host which is unhealthy.
 	if err := lb.hostManager.AddHost(h); err != nil {
 		t.Error("error adding host: ", err.Error())
 	}
