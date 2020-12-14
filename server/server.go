@@ -22,12 +22,18 @@ var (
 // NewLoadBalancer returns a new LoadBalancer instance.
 func NewLoadBalancer(c LoadBalancerConfig) LoadBalancer {
 	hostManager := HostManager{}
+
+	runnables := []background.Runnable{
+		HealthCheck{manager: &hostManager},
+	}
+
 	return LoadBalancer{
 		C:           c,
 		Port:        "8081",
 		hostManager: &hostManager,
 		backgroundRunner: background.Runner{
-			Cooldown: time.Second * 10,
+			Cooldown:  time.Second * 10,
+			Runnables: runnables,
 		},
 	}
 }

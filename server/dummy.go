@@ -26,6 +26,7 @@ func NewDummy() DummyServer {
 	}
 }
 
+// addToLoadBalancer adds the dummer server to the loadbalancer instance.
 func (ds DummyServer) addToLoadBalancer() error {
 	req := AddHostRequest{Endpoint: ds.DummyHost.Endpoint(), RegexPattern: "123"}
 	b, err := json.Marshal(req)

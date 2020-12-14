@@ -13,15 +13,20 @@ type Runnable interface {
 // Runner runs the routines forever.
 type Runner struct {
 	// runnables are the runnable background processes.
-	runnables []Runnable
+	Runnables []Runnable
 	// Cooldown is the duration between each time the routine runner executes its routines.
 	Cooldown time.Duration
+}
+
+// AddRunnable adds a new runnable instance.
+func (runner *Runner) AddRunnable(runnable Runnable) {
+	runner.Runnables = append(runner.Runnables, runnable)
 }
 
 func (runner Runner) executeRunnables() error {
 	for {
 		// log.Println("Running background runnables.")
-		for _, r := range runner.runnables {
+		for _, r := range runner.Runnables {
 			if err := r.Run(); err != nil {
 				return err
 			}
