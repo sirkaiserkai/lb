@@ -6,7 +6,7 @@ import (
 )
 
 func TestAddHost(t *testing.T) {
-	hostManager := HostManager{}
+	hostManager := NewHostManager()
 	h := GenericHost{
 		endpoint: "example.com",
 	}
@@ -29,8 +29,8 @@ func TestRemoveHost(t *testing.T) {
 	for i := 0; i < len(endpoints); i++ {
 		randHosts[i] = NewHost(endpoints[i])
 	}
-	hostManager := HostManager{}
-	hostManager.hosts = randHosts
+	hostManager := NewHostManager()
+	hostManager.SetHosts(randHosts)
 	randomSample := randHosts[rand.Intn(len(randHosts))]
 	tests := []HostTest{
 		{
