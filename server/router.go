@@ -6,39 +6,20 @@ import (
 
 // Router maps a request to a given host, if the pattern exists.
 type Router struct {
-	routeMaps []*RouteMap
+	hostManager *HostManager
 }
 
-// RoutePattern maps a pattern to a Host endpoint. Not, the patterns are concatenated onto one another.
-type RoutePattern struct {
-	p    Pattern
-	Host string
-}
-
-// Pattern is a Regex pattern.
-type Pattern struct {
-	RegexString string
-}
-
-// NewRouter returns an ew Router instance for the given regex.
-func NewRouter(routes []RoutePattern) (*Router, error) {
-	maps := make([]*RouteMap, len(routes))
-	for i, rp := range routes {
-		routeMap, err := NewMap(rp)
-		if err != nil {
-			return nil, err
-		}
-		maps[i] = routeMap
-	}
-	return &Router{routeMaps: maps}, nil
+// NewRouter returns a new Router instance for the given regex.
+func NewRouter(hm *HostManager) (*Router, error) {
+	return &Router{hostManager: hm}, nil
 }
 
 // GetHost returns the host URL for the given request string.
-func (r Router) GetHost(request string) (string, error) {
-	for _, m := range r.routeMaps {
-		if m.Match(request) {
-			return m.r.Host, nil
+func (r Router) GetHost(request string) (Host, error) {
+	for _, h := range r.hostManager.GetHosts() {
+		if h.Route().Match(request) {
+			return h, nil
 		}
 	}
-	return "", errors.New("no match found")
+	return nil, errors.New("no match found")
 }

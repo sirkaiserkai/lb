@@ -7,8 +7,6 @@ const (
 
 // RouterConfig is the configuration object for the server.
 type RouterConfig struct {
-	Patterns []Pattern
-	Routes   []RoutePattern
 }
 
 // LoadBalancerConfig is the configuration object for a loadbalancer.

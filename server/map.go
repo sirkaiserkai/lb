@@ -3,21 +3,21 @@ package server
 import "regexp"
 
 // NewMap returns a new RouteMap instance for the given pattern.
-func NewMap(rp RoutePattern) (*RouteMap, error) {
-	reg, err := regexp.Compile(rp.p.RegexString)
+func NewMap(pattern string) (*RouteMap, error) {
+	reg, err := regexp.Compile(pattern)
 	if err != nil {
 		return nil, err
 	}
 	return &RouteMap{
-		regex: reg,
-		r:     rp,
+		regex:   reg,
+		pattern: pattern,
 	}, nil
 }
 
 // RouteMap contains the regex map
 type RouteMap struct {
-	regex *regexp.Regexp
-	r     RoutePattern
+	regex   *regexp.Regexp
+	pattern string
 }
 
 // Match validates whether the given request matches the router's regex.

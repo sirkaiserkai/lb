@@ -11,11 +11,13 @@ type Host interface {
 	Endpoint() string
 	Health() (*HealthStatusResponse, error)
 	EqualsHost(other Host) bool
+	Route() RouteMap
 }
 
 // GenericHost is the default struct that encapsulates a host.
 type GenericHost struct {
 	endpoint string
+	route    RouteMap
 }
 
 // Health returns the health of the service.
@@ -53,6 +55,11 @@ func (h GenericHost) EqualsHost(other Host) bool {
 // NewHost returns a host for the given endpoint
 func NewHost(endpoint string) Host {
 	return GenericHost{endpoint: endpoint}
+}
+
+// Route returns a route for the host
+func (h GenericHost) Route() RouteMap {
+	return h.route
 }
 
 // NewHostForAddHostRequest creates a host for a AddHostRequest

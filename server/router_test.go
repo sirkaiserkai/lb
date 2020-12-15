@@ -5,50 +5,42 @@ import "testing"
 // Should probably split this out into two structs. One for configuration another for the tests.RouterTest
 // At this point, the structure misleading because a 'request' may match to a previous RoutePattern.
 type RouterTest struct {
-	pattern RoutePattern
-	request string
-	isMatch bool
+	endpoint string
+	pattern  string
+	request  string
+	isMatch  bool
 }
 
 var tests []RouterTest = []RouterTest{
 	{
-		pattern: RoutePattern{
-			p: Pattern{
-				RegexString: "^00[0-z].*",
-			},
-			Host: "xyz.com",
-		},
-		request: "00U123123ABCaa",
-		isMatch: true,
+		endpoint: "00z.com",
+		pattern:  "^00[0-z].*",
+		request:  "00U123123ABCaa",
+		isMatch:  true,
 	},
 	{
-		pattern: RoutePattern{
-			p: Pattern{
-				RegexString: "^00[0-z].*",
-			},
-			Host: "xyz.com",
-		},
-		request: "12345678",
-		isMatch: false,
+		endpoint: "abc.com",
+		pattern:  "^abc[0-z].*",
+		request:  "12345678",
+		isMatch:  false,
 	},
 }
 
 func TestMatch(t *testing.T) {
 
 	// Set up tests
-	routes := make([]RoutePattern, len(tests))
+	routes := make([]RouteMap, len(tests))
 	for i, test := range tests {
-		routes[i] = test.pattern
+		m, err := NewMap(test.pattern)
+		if err != nil {
+			t.Errorf(err.Error())
+			return
+		}
+		routes[i] = *m
 	}
 
-	r, err := NewRouter(routes)
-	if err != nil {
-		t.Errorf("Unexpected error: '%s'", err)
-		return
-	}
-
 	for i, test := range tests {
-		if r.routeMaps[i].Match(test.request) != test.isMatch {
+		if routes[i].Match(test.request) != test.isMatch {
 			t.Errorf("Match was not equal to expected output.")
 		}
 	}
@@ -56,16 +48,25 @@ func TestMatch(t *testing.T) {
 
 func TestGetHost(t *testing.T) {
 	// Set up tests
-	routes := make([]RoutePattern, len(tests))
-	for i, test := range tests {
-		routes[i] = test.pattern
-	}
-
-	r, err := NewRouter(routes)
+	hm := NewHostManager()
+	r, err := NewRouter(&hm)
 	if err != nil {
 		t.Errorf("Unexpected error: '%s'", err)
 		return
 	}
+	for _, test := range tests {
+		m, err := NewMap(test.pattern)
+		if err != nil {
+			t.Errorf("Unexpected error: '%s'", err)
+			return
+		}
+		h := GenericHost{
+			endpoint: test.endpoint,
+			route:    *m,
+		}
+		hm.AddHost(h)
+	}
+
 	for _, test := range tests {
 		host, err := r.GetHost(test.request)
 		if err != nil {
@@ -73,8 +74,8 @@ func TestGetHost(t *testing.T) {
 				t.Errorf("Failed to map to host: '%s'", err)
 			}
 		}
-		if test.isMatch && host != test.pattern.Host {
-			t.Errorf("Failed to map to correct host. Expected: '%s'. Received: '%s'", test.pattern.Host, host)
+		if test.isMatch && host.Endpoint() != test.endpoint {
+			t.Errorf("Failed to map to correct host. Expected: '%s'. Received: '%s'", test.endpoint, host.Endpoint())
 		}
 	}
 }
