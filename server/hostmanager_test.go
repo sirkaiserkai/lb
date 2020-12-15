@@ -6,12 +6,12 @@ import (
 )
 
 func TestAddHost(t *testing.T) {
-	lb := NewLoadBalancer(LoadBalancerConfig{})
+	hostManager := HostManager{}
 	h := GenericHost{
 		endpoint: "example.com",
 	}
 	// TODO: Test adding an existing host which is unhealthy.
-	if err := lb.hostManager.AddHost(h); err != nil {
+	if err := hostManager.AddHost(h); err != nil {
 		t.Error("error adding host: ", err.Error())
 	}
 }
@@ -29,9 +29,8 @@ func TestRemoveHost(t *testing.T) {
 	for i := 0; i < len(endpoints); i++ {
 		randHosts[i] = NewHost(endpoints[i])
 	}
-	lb := NewLoadBalancer(LoadBalancerConfig{})
-	lb.hostManager = &HostManager{}
-	lb.hostManager.hosts = randHosts
+	hostManager := HostManager{}
+	hostManager.hosts = randHosts
 	randomSample := randHosts[rand.Intn(len(randHosts))]
 	tests := []HostTest{
 		{
@@ -45,7 +44,7 @@ func TestRemoveHost(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if err := lb.hostManager.RemoveHost(test.host); err != nil {
+		if err := hostManager.RemoveHost(test.host); err != nil {
 			if test.err == nil {
 				t.Errorf("Unexpected error. Received error: '%s'", err)
 			} else if err != test.err {
