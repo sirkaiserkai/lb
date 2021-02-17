@@ -12,3 +12,6 @@ go run cmd/main.go
 go run cmd/main.go -type dummy -port 8081
 go run cmd/main.go -type dummy -port 8082
 ```
+
+
+https://blog.yugabyte.com/four-data-sharding-strategies-we-analyzed-in-building-a-distributed-sql-database/
